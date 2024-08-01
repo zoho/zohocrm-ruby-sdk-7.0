@@ -1,0 +1,47 @@
+require_relative '../exception/sdk_exception'
+require_relative '../util/api_response'
+require_relative '../util/common_api_handler'
+require_relative '../util/utility'
+require_relative '../util/constants'
+
+module ZOHOCRMSDK
+  module ConvertLead
+    class ConvertLeadOperations
+
+        # Creates an instance of ConvertLeadOperations with the given parameters
+        # @param lead_id [Integer] A Integer
+      def initialize(lead_id)
+        if !lead_id.is_a? Integer
+          raise SDKException.new(Constants::DATA_TYPE_ERROR, 'KEY: lead_id EXPECTED TYPE: Integer', nil, nil)
+        end
+        @lead_id = lead_id
+      end
+
+        # The method to convert lead
+        # @param request [BodyWrapper] An instance of BodyWrapper
+        # @return An instance of APIResponse
+      # @raise SDKException
+      def convert_lead(request)
+        if request!=nil and !request.is_a? BodyWrapper
+          raise SDKException.new(Constants::DATA_TYPE_ERROR, 'KEY: request EXPECTED TYPE: BodyWrapper', nil, nil)
+        end
+        handler_instance = Handler::CommonAPIHandler.new
+        api_path = ''
+        api_path = api_path + '/crm/v7/Leads/'
+        api_path = api_path + @lead_id.to_s
+        api_path = api_path + '/actions/convert'
+        handler_instance.api_path = api_path
+        handler_instance.http_method = Constants::REQUEST_METHOD_POST
+        handler_instance.category_method = 'CREATE'
+        handler_instance.content_type = 'application/json'
+        handler_instance.request = request
+        handler_instance.mandatory_checker = true
+        handler_instance.module_api_name = "Deals"
+        Util::Utility.get_fields("Deals", handler_instance)
+        require_relative 'action_handler'
+        handler_instance.api_call(ActionHandler.name, 'application/json')
+      end
+
+    end
+  end
+end
